@@ -1,23 +1,47 @@
 # -*- coding: utf-8 -*-
 # @Author  : LG
 
-from tensor import Tensor
-from nn.mudule import Linear
+import LG_flow
+from LG_flow import nn
 
-input = Tensor(data=([1,2,3,4,5,1,2,3,4,5,1,2,3,4,5],
-                     [1,1,1,1,1,1,2,3,4,5,1,2,3,4,5]))
-fc1 = Linear(in_features=15, out_features=5)
-fc2 = Linear(in_features=5, out_features=3)
 
-out1 = fc1.forward(input)
-out2 = fc2.forward(out1)
+class net(nn.Module):
+    def __init__(self):
+        super(net, self).__init__()
+        self.fc1 = nn.Linear(5,3, bias=False)
+        self.fc2 = nn.Linear(3,2)
 
-print(out2)
-print(out1)
+    def forward(self, x):
 
-out2.backward()
+        x1 = self.fc1.forward(x)
+        x2 = self.fc2.forward(x1)
 
-print(fc2.weight.grad)
-print(fc2.bias.grad)
-print(fc1.weight.grad)
-print(fc1.bias.grad)
+        return x2
+
+x = LG_flow.randint(0,10,(2,5)).float32()
+
+model = net()
+
+# print(model.parameters())
+
+
+# print(model)
+
+
+out = model.forward(x)
+
+
+out.backward()
+
+print(model.fc2.weights)
+print(model.fc1.weights.grad)
+
+# = LG_flow.Parameter(LG_flow.ones(model.fc2.weights.shape))
+out = model.forward(x)
+
+out.backward()
+
+print(model.fc2.weights)
+print(model.fc1.weights.grad)
+
+# model.print_detail()

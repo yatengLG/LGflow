@@ -14,3 +14,4 @@ def linear(input:Tensor, weight:Tensor, bias:Tensor=None):
         ret = output
     return ret
 
+

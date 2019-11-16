@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 # @Author  : LG
 
-import torch
 import numpy as np
 
 class Tensor:
@@ -14,14 +13,23 @@ class Tensor:
         self.from_tensors = from_tensors
         self.op = op
         self.grad = grad
+
+    # 转置
     def t(self):
-        return self.data.T
+        return t.forward([self])
+    # e**self
+    def exp(self):
+        return exp.forward([self])
+    # log(self)
+    def log(self):
+        return log.forward([self])
+    # 加法
     def __add__(self, other):
         return add.forward([self, other])
-
+    # 求和, 可指定维度
     def sum(self,dim=None):
         return sum.forward([self], dim)
-
+    # 乘法
     def __mul__(self, other):
         return mul.forward([self, other])
 
@@ -31,9 +39,14 @@ class Tensor:
     def matmul(self, other):
         return matmul.forward([self, other])
 
-    def __str__(self):
-        return "{}({},shape:{})".format(self.data, self.__class__.__name__, self.shape)
+    def matdiv(self, other):
+        return matdiv.forward([self, other])
 
+    def __str__(self):
+        return "{}\n\t({} shape={} grad_fn={})".format(self.data, self.__class__.__name__, self.shape, self.op)
+
+    def softmax(self,axis=1):
+        return softmax.forward([self], axis=axis)
 
     def backward(self, grad=None):
         if grad is None:
@@ -65,10 +78,17 @@ class ADD(OP):
 
 class SUM(OP):
     def forward(self, from_tensors, dim=None):
-        return Tensor(data=np.sum(from_tensors[0].data, axis=dim), from_tensors=from_tensors, op=self)
+        self.dim = dim
+        data = np.sum(from_tensors[0].data, axis=dim)
+        return Tensor(data=data, from_tensors=from_tensors, op=self)
 
     def backward(self, from_tensors, grad):
-        return [np.ones(shape=from_tensors[0].shape)*grad]
+        shape = from_tensors[0].shape
+        new_shape = list(shape)
+        new_shape[self.dim] = 1
+
+        grad = grad.reshape(new_shape)
+        return [np.repeat(grad, repeats=shape[self.dim], axis=self.dim)]
 
 
 class MUL(OP):
@@ -81,36 +101,66 @@ class MUL(OP):
 
 class MATMUL(OP):
     def forward(self, from_tensors):
+        assert from_tensors[0].shape==from_tensors[1].shape
         return Tensor(np.matmul(from_tensors[0].data, from_tensors[1].data), from_tensors=from_tensors, op=self)
 
     def backward(self, from_tensors, grad):
         return [np.matmul(grad, from_tensors[1].data.T), np.matmul(from_tensors[0].data.T, grad)]
 
+class MATDIV(OP):
+    def forward(self, from_tensors):
+        return Tensor(from_tensors[0].data / from_tensors[1].data, from_tensors, self)
+
+    def backward(self, from_tensors, grad):
+        return [grad / from_tensors[1].data,
+                -grad * from_tensors[0].data / (from_tensors[1].data * from_tensors[1].data)]
+
+
+class EXP(OP):
+    def forward(self, from_tensors):
+        return Tensor(np.exp(from_tensors[0].data), from_tensors=from_tensors, op=self)
+
+    def backward(self, from_tensors, grad):
+
+        return [grad * np.exp(from_tensors[0].data)]
+
+
+class LOG(OP):
+    def forward(self, from_tensors):
+        return Tensor(np.log(from_tensors[0].data), from_tensors=from_tensors, op=self)
+
+    def backward(self, from_tensors, grad):
+        return [grad / from_tensors[0].data]
+
+
+class T(OP):
+    def forward(self, from_tensors):
+        return Tensor(from_tensors[0].data.T, from_tensors=from_tensors, op=self)
+
+    def backward(self, from_tensors, grad):
+        return [grad.T]
+
+
+class SOFTMAX(OP):
+    def forward(self, from_tensors, axis=1):
+        assert from_tensors[0].dim ==2
+        a_exp = np.exp(from_tensors[0].data)
+        sum_ = np.sum(a_exp, axis=axis)
+        if axis==1:
+            return Tensor((a_exp.T / sum_).T, from_tensors=from_tensors, op=self)
+        elif axis==0:
+            return Tensor(a_exp /sum_,from_tensors=from_tensors, op=self)
+
+    def backward(self, from_tensors, grad):
+        pass
+
 
 add = ADD()
 mul = MUL()
 matmul = MATMUL()
-sum=SUM()
-a = Tensor([[1.,2.,3],[4,5,6]])
-b = a.sum(dim=0)
-c = b.sum(dim=None)
-
-
-# print(a)
-
-# b = Tensor([[1.,3.,2],[1,2,4]])
-# print(b)
-# print(a*b)
-# c = Tensor([[1.,2.],[1.,2.],[3,4]])
-# # print(c)
-# e = a+b
-# d = (e).matmul(c)
-# print(d)
-#
-# d.backward()
-#
-# print("d.grad:",d.grad)
-# print("e.grad:",e.grad)
-# print("c.grad:",c.grad)
-# print("b.grad:",b.grad)
-# print("a.grad:",a.grad)
+matdiv = MATDIV()
+sum = SUM()
+exp = EXP()
+log = LOG()
+t = T()
+softmax = SOFTMAX()
