@@ -27,15 +27,15 @@ class Tensor:
     def __add__(self, other):
         if isinstance(other, Tensor):
             # 张量+ 张量
-            results = Math_op.add_with_tensor.forward([self, other])
+            results = Math_op.ADD_WITH_TENSOR().forward([self, other])
             return Tensor(data=results.data, from_tensors=results.from_tensors, grad_fn=results.grad_fn)
         # 张量+ 常量
-        results = Math_op.add_with_const.forward([self, other])
+        results = Math_op.ADD_WITH_CONST().forward([self, other])
         return Tensor(data=results.data, from_tensors=results.from_tensors, grad_fn=results.grad_fn)
 
     # 右加 常量+张量
     def __radd__(self, other):
-        results = Math_op.add_with_const.forward([self, other])
+        results = Math_op.ADD_WITH_CONST().forward([self, other])
         return Tensor(data=results.data, from_tensors=results.from_tensors, grad_fn=results.grad_fn)
 
     # 减法,直接调用加法
@@ -49,87 +49,87 @@ class Tensor:
     # 乘
     def __mul__(self, other):
         if isinstance(other, Tensor):
-            results = Math_op.mul_with_tensor.forward([self, other])
+            results = Math_op.MUL_WITH_TENSOR().forward([self, other])
             return Tensor(data=results.data, from_tensors=results.from_tensors, grad_fn=results.grad_fn)
-        results = Math_op.mul_with_const.forward([self, other])
+        results = Math_op.MUL_WITH_CONST().forward([self, other])
         return Tensor(data=results.data, from_tensors=results.from_tensors, grad_fn=results.grad_fn)
 
     # 右乘
     def __rmul__(self, other):
-        results = Math_op.mul_with_const.forward([self, other])
+        results = Math_op.MUL_WITH_CONST().forward([self, other])
         return Tensor(data=results.data, from_tensors=results.from_tensors, grad_fn=results.grad_fn)
 
     # 矩阵乘法
     def matmul(self, other):
         assert isinstance(other, Tensor)
         assert self.shape[-1] == other.shape[-2]
-        results = Math_op.matmul.forward([self, other])
+        results = Math_op.MATMUL().forward([self, other])
         return Tensor(data=results.data, from_tensors=results.from_tensors, grad_fn=results.grad_fn)
 
     # 除
     def __truediv__(self, other):
         if isinstance(other, Tensor):
-            results = Math_op.div_with_tensor.forward([self, other])
+            results = Math_op.DIV_WITH_TENSOR().forward([self, other])
             return Tensor(data=results.data, from_tensors=results.from_tensors, grad_fn=results.grad_fn)
-        results = Math_op.div_with_const.forward([self, other])
+        results = Math_op.DIV_WITH_CONST().forward([self, other])
         return Tensor(data=results.data, from_tensors=results.from_tensors, grad_fn=results.grad_fn)
 
     # 右除
     def __rtruediv__(self, other):
-        results = Math_op.div_by_const.forward([self, other])
+        results = Math_op.DIV_BY_CONST().forward([self, other])
         return Tensor(data=results.data, from_tensors=results.from_tensors, grad_fn=results.grad_fn)
 
     # ==
     def __eq__(self, other):
         if isinstance(other, Tensor):
-            results = Math_op.eq_tensor.forward([self, other])
+            results = Math_op.EQ_TENSOR().forward([self, other])
             return Tensor(data=results.data, from_tensors=results.from_tensors, grad_fn=results.grad_fn)
-        results = Math_op.eq_const.forward([self, other])
+        results = Math_op.EQ_CONST().forward([self, other])
         return Tensor(data=results.data, from_tensors=results.from_tensors, grad_fn=results.grad_fn)
 
     # !=
     def __ne__(self, other):
         if isinstance(other, Tensor):
-            results = Math_op.ne_tensor.forward([self, other])
+            results = Math_op.NE_TENSOR().forward([self, other])
             return Tensor(data=results.data, from_tensors=results.from_tensors, grad_fn=results.grad_fn)
-        results = Math_op.ne_const.forward([self, other])
+        results = Math_op.NE_TENSOR().forward([self, other])
         return Tensor(data=results.data, from_tensors=results.from_tensors, grad_fn=results.grad_fn)
 
     # <
     def __lt__(self, other):
         if isinstance(other, Tensor):
-            results = Math_op.lt_tensor.forward([self, other])
+            results = Math_op.LT_TENSOR().forward([self, other])
             return Tensor(data=results.data, from_tensors=results.from_tensors, grad_fn=results.grad_fn)
-        results = Math_op.lt_const.forward([self, other])
+        results = Math_op.LT_CONST().forward([self, other])
         return Tensor(data=results.data, from_tensors=results.from_tensors, grad_fn=results.grad_fn)
 
     # <=
     def __le__(self, other):
         if isinstance(other, Tensor):
-            results = Math_op.le_tensor.forward([self, other])
+            results = Math_op.LE_TENSOR().forward([self, other])
             return Tensor(data=results.data, from_tensors=results.from_tensors, grad_fn=results.grad_fn)
-        results = Math_op.le_const.forward([self, other])
+        results = Math_op.LE_CONST().forward([self, other])
         return Tensor(data=results.data, from_tensors=results.from_tensors, grad_fn=results.grad_fn)
 
     # >
     def __gt__(self, other):
         if isinstance(other, Tensor):
-            results = Math_op.gt_tensor.forward([self, other])
+            results = Math_op.GT_TENSOR().forward([self, other])
             return Tensor(data=results.data, from_tensors=results.from_tensors, grad_fn=results.grad_fn)
-        results = Math_op.gt_const.forward([self, other])
+        results = Math_op.GT_CONST().forward([self, other])
         return Tensor(data=results.data, from_tensors=results.from_tensors, grad_fn=results.grad_fn)
 
     # >=
     def __ge__(self, other):
         if isinstance(other, Tensor):
-            results = Math_op.ge_tensor.forward([self, other])
+            results = Math_op.GE_TENSOR().forward([self, other])
             return Tensor(data=results.data, from_tensors=results.from_tensors, grad_fn=results.grad_fn)
-        results = Math_op.ge_const.forward([self, other])
+        results = Math_op.GE_CONST().forward([self, other])
         return Tensor(data=results.data, from_tensors=results.from_tensors, grad_fn=results.grad_fn)
 
     # 次方
     def __pow__(self, power, modulo=None):
-        results = Math_op.power.forward([self], exponents=power)
+        results = Math_op.POWER().forward([self], exponents=power)
         return Tensor(data=results.data, from_tensors=results.from_tensors, grad_fn=results.grad_fn)
 
     def pow(self, power):
@@ -137,7 +137,7 @@ class Tensor:
 
     # 取反,减法中调用
     def __neg__(self):
-        results = Math_op.neg.forward([self])
+        results = Math_op.NEG().forward([self])
         return Tensor(data=results.data, from_tensors=results.from_tensors, grad_fn=results.grad_fn)
 
     def neg(self):
@@ -145,7 +145,7 @@ class Tensor:
 
     # 取绝对值
     def __abs__(self):
-        results = Math_op.abs.forward([self])
+        results = Math_op.ABS().forward([self])
         return Tensor(data=results.data, from_tensors=results.from_tensors, grad_fn=results.grad_fn)
 
     def abs(self):
@@ -153,55 +153,49 @@ class Tensor:
 
     # 截断
     def clip(self,min=None, max=None):
-        results = Math_op.clip.forward([self],min=min, max=max)
+        results = Math_op.CLIP().forward([self],min=min, max=max)
         return Tensor(data=results.data, from_tensors=results.from_tensors, grad_fn=results.grad_fn)
 
     # 索引单个元素
     def item(self, index):
         assert isinstance(index, int) or isinstance(index, tuple)
-        results = Math_op.item.forward([self], index)
+        results = Math_op.ITEM().forward([self], index)
         return Tensor(data=results.data, from_tensors=results.from_tensors, grad_fn=results.grad_fn)
 
     # 索引单个元素并替换
     def itemset(self, index, value):
-        """
-        返回一个新的张量,与原张量不共享
-        :param index:
-        :param value:
-        :return:
-        """
         assert isinstance(index, int) or isinstance(index, tuple)
-        results = Math_op.itemset.forward([self], index, value)
+        results = Math_op.ITEMSET().forward([self], index, value)
         return Tensor(data=results.data, from_tensors=results.from_tensors, grad_fn=results.grad_fn)
 
     # 求最小值
     def min(self, axis=None, keepdims=False):
         assert isinstance(axis, int) or (axis is None)
-        results = Math_op.min.forward([self], axis, keepdims)
+        results = Math_op.MIN().forward([self], axis, keepdims)
         return Tensor(data=results.data, from_tensors=results.from_tensors, grad_fn=results.grad_fn)
 
     # 求最大值
     def max(self,axis=None, keepdims=False):
         assert isinstance(axis, int) or (axis is None)
-        results = Math_op.max.forward([self], axis, keepdims)
+        results = Math_op.MAX().forward([self], axis, keepdims)
         return Tensor(data=results.data, from_tensors=results.from_tensors, grad_fn=results.grad_fn)
 
     # 求和
     def sum(self, axis=None, keepdims=False):
         assert isinstance(axis, int) or (axis is None)
-        results = Math_op.sum.forward([self], axis, keepdims)
+        results = Math_op.SUM().forward([self], axis, keepdims)
         return Tensor(data=results.data, from_tensors=results.from_tensors, grad_fn=results.grad_fn)
 
     # 求均值
     def mean(self, axis=None, keepdims=False):
         assert isinstance(axis, int) or (axis is None)
-        results = Math_op.mean.forward([self], axis, keepdims)
+        results = Math_op.MEAN().forward([self], axis, keepdims)
         return Tensor(data=results.data, from_tensors=results.from_tensors, grad_fn=results.grad_fn)
 
     # 求方差
     def std(self, axis=None, keepdims=False):
         assert isinstance(axis, int) or (axis is None)
-        results = Math_op.std.forward([self], axis, keepdims)
+        results = Math_op.STD().forward([self], axis, keepdims)
         return Tensor(data=results.data, from_tensors=results.from_tensors, grad_fn=results.grad_fn)
 
     # 数据data原地改变后,更新属性

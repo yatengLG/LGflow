@@ -26,7 +26,10 @@ class ADD_WITH_TENSOR(Math):
         assert len(from_tensors)==2
         return results(from_tensors[0].data + from_tensors[1].data, from_tensors, self)
     def backward(self, from_tensors, grad):
-        return [grad, grad]
+        if grad.shape != from_tensors[1].data.shape:
+            return [grad, np.sum(grad, axis=0)]
+        else:
+            return [grad, grad]
 
 # 张量*常数
 class MUL_WITH_CONST(Math):
@@ -250,41 +253,3 @@ class MATMUL(Math):
     def backward(self, from_tensors, grad):
         return [np.matmul(grad, from_tensors[1].data.T), np.matmul(from_tensors[0].data.T, grad)]
 
-
-add_with_const = ADD_WITH_CONST()
-add_with_tensor = ADD_WITH_TENSOR()
-
-mul_with_const = MUL_WITH_CONST()
-mul_with_tensor = MUL_WITH_TENSOR()
-
-div_with_const = DIV_WITH_CONST()
-div_with_tensor = DIV_WITH_TENSOR()
-div_by_const = DIV_BY_CONST()
-
-eq_tensor = EQ_TENSOR()
-eq_const = EQ_CONST()
-ne_tensor = NE_TENSOR()
-ne_const = NE_TENSOR()
-lt_tensor = LT_TENSOR()
-lt_const = LT_CONST()
-le_tensor = LE_TENSOR()
-le_const = LE_CONST()
-gt_tensor = GT_TENSOR()
-gt_const = GT_CONST()
-ge_tensor = GE_TENSOR()
-ge_const = GE_CONST()
-
-neg = NEG()
-clip = CLIP()
-item = ITEM()
-itemset = ITEMSET()
-
-max = MAX()
-min = MIN()
-abs = ABS()
-mean = MEAN()
-std = STD()
-sum = SUM()
-power = POWER()
-
-matmul = MATMUL()
