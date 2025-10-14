@@ -353,8 +353,6 @@ class SUM(Math):
         return [new_grad]
 
 
-
-
 # 均值 维度
 class MEAN(Math):
     def __init__(self, axis: int, keepdims: bool):
