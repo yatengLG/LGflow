@@ -332,7 +332,27 @@ class SUM(Math):
         )
 
     def backward(self, from_tensors, grad):
-        raise NotImplementedError
+        data = from_tensors[0].data
+        if self.keepdims:
+            new_grad = np.broadcast_to(grad, data.shape)
+        else:
+            new_grad = np.zeros_like(data)
+            if self.axis is None:
+                new_grad[:] = grad
+            else:
+                indices = [slice(None)] * len(data.shape)
+
+                if isinstance(self.axis, tuple):
+                    for ax in self.axis:
+                        indices[ax] = np.newaxis
+                else:
+                    indices[self.axis] = np.newaxis
+
+                expanded_grad = grad[tuple(indices)]
+                new_grad = np.broadcast_to(expanded_grad, data.shape)
+        return [new_grad]
+
+
 
 
 # 均值 维度
@@ -369,6 +389,17 @@ class STD(Math):
 
     def backward(self, from_tensors, grad):
         raise NotImplementedError
+
+
+class EXP(Math):
+    def forward(self, from_tensors):
+        assert len(from_tensors) == 1
+        return results(
+            np.exp(from_tensors[0].data), from_tensors, self
+        )
+
+    def backward(self, from_tensors, grad):
+        return [grad * np.exp(from_tensors[0].data)]
 
 
 # 矩阵乘法
