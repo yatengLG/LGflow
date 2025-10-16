@@ -92,7 +92,7 @@ class DIV_WITH_TENSOR(Math):
         data0 = from_tensors[0].data
         data1 = from_tensors[1].data
         grad0 = grad / data1
-        grad1 = grad * data0 / (data1 ** 2)
+        grad1 = -grad * data0 / (data1 ** 2)
 
         def reduce_grad(grad, target_shape):
             if grad.shape == target_shape:
