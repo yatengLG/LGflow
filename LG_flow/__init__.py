@@ -129,7 +129,7 @@ class Tensor:
 
     # 次方
     def __pow__(self, power, modulo=None):
-        results = Math_op.POWER().forward([self], exponents=power)
+        results = Math_op.POWER(exponents=power).forward([self])
         return Tensor(data=results.data, from_tensors=results.from_tensors, grad_fn=results.grad_fn)
 
     def pow(self, power):
@@ -153,7 +153,7 @@ class Tensor:
 
     # 截断
     def clip(self,min=None, max=None):
-        results = Math_op.CLIP().forward([self],min=min, max=max)
+        results = Math_op.CLIP(min=min, max=max).forward([self])
         return Tensor(data=results.data, from_tensors=results.from_tensors, grad_fn=results.grad_fn)
 
     # 索引单个元素
@@ -171,31 +171,39 @@ class Tensor:
     # 求最小值
     def min(self, axis=None, keepdims=False):
         assert isinstance(axis, int) or (axis is None)
-        results = Math_op.MIN().forward([self], axis, keepdims)
+        results = Math_op.MIN(axis, keepdims).forward([self])
         return Tensor(data=results.data, from_tensors=results.from_tensors, grad_fn=results.grad_fn)
 
     # 求最大值
     def max(self,axis=None, keepdims=False):
         assert isinstance(axis, int) or (axis is None)
-        results = Math_op.MAX().forward([self], axis, keepdims)
+        results = Math_op.MAX(axis, keepdims).forward([self])
         return Tensor(data=results.data, from_tensors=results.from_tensors, grad_fn=results.grad_fn)
 
     # 求和
     def sum(self, axis=None, keepdims=False):
         assert isinstance(axis, int) or (axis is None)
-        results = Math_op.SUM().forward([self], axis, keepdims)
+        results = Math_op.SUM(axis, keepdims).forward([self])
         return Tensor(data=results.data, from_tensors=results.from_tensors, grad_fn=results.grad_fn)
 
     # 求均值
     def mean(self, axis=None, keepdims=False):
         assert isinstance(axis, int) or (axis is None)
-        results = Math_op.MEAN().forward([self], axis, keepdims)
+        results = Math_op.MEAN(axis, keepdims).forward([self])
         return Tensor(data=results.data, from_tensors=results.from_tensors, grad_fn=results.grad_fn)
 
     # 求方差
     def std(self, axis=None, keepdims=False):
         assert isinstance(axis, int) or (axis is None)
-        results = Math_op.STD().forward([self], axis, keepdims)
+        results = Math_op.STD(axis, keepdims).forward([self])
+        return Tensor(data=results.data, from_tensors=results.from_tensors, grad_fn=results.grad_fn)
+
+    def exp(self):
+        results = Math_op.EXP().forward([self])
+        return Tensor(data=results.data, from_tensors=results.from_tensors, grad_fn=results.grad_fn)
+
+    def log(self):
+        results = Math_op.LOG().forward([self])
         return Tensor(data=results.data, from_tensors=results.from_tensors, grad_fn=results.grad_fn)
 
     # 数据data原地改变后,更新属性
@@ -269,24 +277,12 @@ class Tensor:
         if self.grad_fn is not None:
             grads = self.grad_fn.backward(self.from_tensors, grad)
             for tensor, grad in zip(self.from_tensors, grads):
-
                 if isinstance(tensor, Tensor):
-
                     if tensor.grad is not None and tensor.grad_fn is None:
-                        # print("存在 更新分支")
-                        # print(tensor.grad_fn)
-                        # print("update: {}".format(update))
-                        # old_grad = tensor.grad
                         tensor.grad = tensor.grad + grad
-                        # print("tensor.grad = tensor.grad + grad\n{}\n = {} \n+ {}".format(tensor.grad, old_grad, grad))
-                        tensor.backward(tensor.grad)
                     else:
-                        # print("不存在")
-                        # print(tensor.grad_fn)
-                        # print("tensor.grad =  grad\n{}".format(grad))
-
                         tensor.grad = grad
-                        tensor.backward(tensor.grad)
+                    tensor.backward(tensor.grad)
 
 class Parameter(Tensor):
     def __init__(self, data):
