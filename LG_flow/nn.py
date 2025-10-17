@@ -105,7 +105,7 @@ class Linear(Module):
         self.in_features = in_features
         self.out_features = out_features
         self.use_bias = use_bias
-        self.weights = Parameter(LG_flow.randn(shape=(in_features, out_features), requires_grad=True))
+        self.weights = Parameter(LG_flow.randn(shape=(out_features, in_features), requires_grad=True))
         self.bias = Parameter(LG_flow.zeros(out_features,requires_grad=True)) if use_bias else None
 
     def forward(self, x:LG_flow.Tensor):

@@ -4,7 +4,7 @@
 from LG_flow import Tensor
 
 def linear(input_tensor:Tensor, weight:Tensor, bias:Tensor=None)->Tensor:
-    output = input_tensor.matmul(weight)
+    output = input_tensor.matmul(weight.T())
     if bias is not None:
         output = output+bias
     return output
