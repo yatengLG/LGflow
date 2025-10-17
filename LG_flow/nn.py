@@ -93,46 +93,23 @@ class Module(object):
 
 
     def __str__(self):
-        cont = ""
+        cont = "{}\n".format(self.__class__.__name__)
         for module_name, module in self._modules.items():
-            cont += "{} : {}\n".format(module_name, module)
-            for param in module._parameters.items():
-                cont += "   {}\n".format(param)
+            cont += "  {} : {}\n".format(module_name, module)
         return cont
 
-    def print_struct(self):
-        cont = ""
-        for module_name, module in self._modules.items():
-            cont += "{} : {}\n".format(module_name, module)
-            for param in module._parameters.items():
-                cont += "   {}\n".format(param)
-        print(cont)
-
-    def print_detail(self):
-        cont = ""
-        for module in self._modules.items():
-            cont += "{}\n".format(module)
-
-            module_name, module = module
-            for param_name, param in module._parameters.items():
-                cont += "{} : {}\n".format(param_name, param)
-            cont+="----"*20+"\n"
-        print(cont)
 
 class Linear(Module):
-    def __init__(self, in_features, out_features, bias=True):
+    def __init__(self, in_features, out_features, use_bias=True):
         super(Linear, self).__init__()
         self.in_features = in_features
         self.out_features = out_features
+        self.use_bias = use_bias
         self.weights = Parameter(LG_flow.randn(shape=(in_features, out_features), requires_grad=True))
-
-        if bias:
-            self.bias = Parameter(LG_flow.zeros(out_features,requires_grad=True))
-        else:
-            self.bias = None
+        self.bias = Parameter(LG_flow.zeros(out_features,requires_grad=True)) if use_bias else None
 
     def forward(self, x:LG_flow.Tensor):
         return f.linear(x, self.weights, self.bias)
 
     def __str__(self):
-        return "(LG_flow.nn.Linear)"
+        return "LG_flow.nn.Linear(in_features={}, out_features={}, use_bias={})".format(self.in_features, self.out_features, self.use_bias)
