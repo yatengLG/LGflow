@@ -457,6 +457,14 @@ class LOG(Math):
         return [grad / from_tensors[0].data]
 
 
+class T(Math):
+    def forward(self, from_tensors):
+        assert len(from_tensors) == 1
+        return results(from_tensors[0].data.T, from_tensors, self)
+
+    def backward(self, from_tensors, grad):
+        return [grad.T]
+
 # 矩阵乘法
 class MATMUL(Math):
     def forward(self, from_tensors):
