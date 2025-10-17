@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 # @Author  : LG
 
-from LG_flow import Tensor
+from LG_flow.tensor import Tensor
+
 
 def linear(input_tensor:Tensor, weight:Tensor, bias:Tensor=None)->Tensor:
     output = input_tensor.matmul(weight.T())
@@ -30,6 +31,4 @@ def cross_entropy(input:Tensor, target: Tensor, reduction: str = "mean")->Tensor
     else:
         raise ValueError("Invalid reduction option")
     return output
-
-
 

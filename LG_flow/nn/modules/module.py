@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 # @Author  : LG
 
-import LG_flow
-import LG_flow.functional as f
-from LG_flow import Parameter
+
 from collections import OrderedDict
+from ..parameter import Parameter
+
 
 class Module(object):
     def __init__(self):
@@ -16,11 +16,6 @@ class Module(object):
         raise NotImplementedError
 
     def __setattr__(self, key, value):
-
-        # def remove_from(*dicts):
-        #     for d in dicts:
-        #         if key in d:
-        #             del d[key]
         object.__setattr__(self, key, value)
 
         params = self.__dict__.get("_parameters")
@@ -39,8 +34,6 @@ class Module(object):
                 raise AttributeError("_modules cannot assign after __init__")
 
             self.register_module(key, value)
-
-            # self.register_parameter(value.)
         else:
 
             if value is None:
@@ -89,36 +82,3 @@ class Module(object):
         get_params("",self)
 
         return params_dic
-
-
-
-    def __str__(self):
-        cont = "{}\n".format(self.__class__.__name__)
-        for module_name, module in self._modules.items():
-            cont += "  {} : {}\n".format(module_name, module)
-        return cont
-
-
-class Linear(Module):
-    def __init__(self, in_features, out_features, use_bias=True):
-        super(Linear, self).__init__()
-        self.in_features = in_features
-        self.out_features = out_features
-        self.use_bias = use_bias
-        self.weights = Parameter(LG_flow.randn(shape=(out_features, in_features), requires_grad=True))
-        self.bias = Parameter(LG_flow.zeros(out_features,requires_grad=True)) if use_bias else None
-
-    def forward(self, x:LG_flow.Tensor):
-        return f.linear(x, self.weights, self.bias)
-
-    def __str__(self):
-        return "LG_flow.nn.Linear(in_features={}, out_features={}, use_bias={})".format(self.in_features, self.out_features, self.use_bias)
-
-
-class CrossEntropyLoss(Module):
-    def __init__(self, reduction="mean"):
-        super(CrossEntropyLoss, self).__init__()
-        self.reduction = reduction
-
-    def forward(self, input: LG_flow.Tensor, target: LG_flow.Tensor):
-        return LG_flow.functional.cross_entropy(input, target, self.reduction)
