@@ -206,6 +206,10 @@ class Tensor:
         results = Math_op.LOG().forward([self])
         return Tensor(data=results.data, from_tensors=results.from_tensors, grad_fn=results.grad_fn)
 
+    def T(self):
+        results = Math_op.T().forward([self])
+        return Tensor(data=results.data, from_tensors=results.from_tensors, grad_fn=results.grad_fn)
+
     # 数据data原地改变后,更新属性
     def upattr(self):
         self.shape = self.data.shape
