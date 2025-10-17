@@ -12,7 +12,7 @@ class Module(object):
         self._modules = OrderedDict()
         self._buffers = OrderedDict()
 
-    def forward(self, x):
+    def forward(self, *inputs):
         raise NotImplementedError
 
     def __setattr__(self, key, value):
@@ -113,3 +113,12 @@ class Linear(Module):
 
     def __str__(self):
         return "LG_flow.nn.Linear(in_features={}, out_features={}, use_bias={})".format(self.in_features, self.out_features, self.use_bias)
+
+
+class CrossEntropyLoss(Module):
+    def __init__(self, reduction="mean"):
+        super(CrossEntropyLoss, self).__init__()
+        self.reduction = reduction
+
+    def forward(self, input: LG_flow.Tensor, target: LG_flow.Tensor):
+        return LG_flow.functional.cross_entropy(input, target, self.reduction)
