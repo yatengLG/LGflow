@@ -5,7 +5,6 @@ from LG_flow.tensor import Tensor, randn, zeros
 from LG_flow.nn.init import kaiming_uniform_
 from .module import Parameter, Module
 from ..functional import linear
-import math
 
 
 class Linear(Module):
