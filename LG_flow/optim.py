@@ -9,9 +9,10 @@ class SGD:
 
     def zero_grad(self):
         for k, w in self.params.items():
-            if w.grad is not None:
+            if  w is not None and w.grad is not None:
                 w.grad = None
 
     def step(self):
         for k, w in self.params.items():
-            w.data =  w.data - w.grad * self.lr
+            if w is not None:
+                w.data =  w.data - w.grad * self.lr
