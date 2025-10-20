@@ -465,6 +465,16 @@ class T(Math):
     def backward(self, from_tensors, grad):
         return [grad.T]
 
+
+class ReLU(Math):
+    def forward(self, from_tensors):
+        assert len(from_tensors) == 1
+        return results(np.maximum(0, from_tensors[0].data), from_tensors, self)
+
+    def backward(self, from_tensors, grad):
+        return [grad * (from_tensors[0].data > 0)]
+
+
 # 矩阵乘法
 class MATMUL(Math):
     def forward(self, from_tensors):
