@@ -53,7 +53,7 @@
 ## 四. 部分计算的实现过程
 
 ### 4.1 链式法则
-对于 $y=f(x)$，$x=g(t)$
+对于 $y=f(x)$， $x=g(t)$
 
 $$\frac {\partial y}{\partial t} = \frac {\partial y}{\partial x} \frac{\partial x}{\partial t}$$
 
@@ -64,7 +64,7 @@ $$\frac {\partial y}{\partial t} = \frac {\partial y}{\partial x} \frac{\partial
 
 *在LGflow中，Module类没有backward方法，所有梯度运算都继承自math类，比如relu(), log()等*
 
-如Math_op.py中DIV_WITH_TENSOR运算:$f(x, y) = x / y$
+如Math_op.py中DIV_WITH_TENSOR运算: $f(x, y) = x / y$
 
 $$\frac {\partial}{\partial x}f(x, y) = grad \frac {1}{y}$$
 $$\frac {\partial}{\partial y}f(x, y) = grad \frac {-x}{y^2}$$
@@ -289,6 +289,7 @@ D(x)
 $$D(x) = \frac {4a^2}{12} = \frac {a^2}{3}$$
 
 则，分布上下限参数a可表示为：
+
 $$a = \sqrt[2] {3D(x)} = \sqrt[2] {3}std$$
 
 #### 2). gain = math.sqrt(2.0 / 1 + a ** 2)的计算过程
