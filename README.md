@@ -339,6 +339,22 @@ $$
 
 因为要保持激活函数的输入与输出具有方差一致性，所以需要对输出乘以一个增益倍数gain。
 
-$$gain = \sqrt\frac {2}{1+a^2}$$
+$$gain = \sqrt {\frac {2}{1+a^2}}$$
 
 （gain是输入标准差与输出标准差的比值，所以需要开根号）
+
+#### 3). 整体理解
+
+$$
+\begin{multline}
+\begin{split}
+bound 
+&= \sqrt[2] {3D(x)} \\
+&= \sqrt[2] {3}std \\
+&= \sqrt[2] {3} \frac {gain}{\sqrt[2] {fan}} \\
+&= \sqrt[2] {3} \frac {\sqrt[2] {\frac {2}{1+a^2}}}{\sqrt[2] {fan}} \\
+&= \sqrt[2] {3\frac {2}{1+a^2} \frac {1}{fan}} \\
+&= \sqrt[2] {\frac {6}{(1+a^2){fan}}}
+\end{split}
+\end{multline}
+$$
