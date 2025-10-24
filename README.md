@@ -242,7 +242,12 @@ bound是uniform的上下限，std是标准差。
 
 对于uniform均匀分布，概率分布函数f(x)满足下述公式，其中a，b分别为最小值与最大值：
 
-$$f(x)=\begin{cases} \frac{1}{(b-a)}& \text{$a<=x<=b$} \\0 \end{cases}$$
+$$f(x)=
+\begin{cases} 
+\frac{1}{(b-a)}& \text{$a<=x<=b$} \\
+0 
+\end{cases}
+$$
 
 uniform的期望与方差计算公式如下：
 
