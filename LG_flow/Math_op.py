@@ -442,7 +442,32 @@ class MEAN(Math):
         )
 
     def backward(self, from_tensors, grad):
-        raise NotImplementedError
+        data = from_tensors[0].data
+
+        if self.keepdims:
+            grad_broadcast = np.broadcast_to(grad, data.shape)
+        else:
+            if self.axis is None:
+                grad_broadcast = np.full_like(data, grad)
+            else:
+                indices = [slice(None)] * len(data.shape)
+
+                if isinstance(self.axis, tuple):
+                    for ax in self.axis:
+                        indices[ax] = np.newaxis
+                else:
+                    indices[self.axis] = np.newaxis
+                grad_broadcast = np.broadcast_to(grad[tuple(indices)], data.shape)
+
+        if self.axis is None:
+            num = data.size
+        else:
+            axis = self.axis if isinstance(self.axis, tuple) else (self.axis, )
+            num = 1
+            for ax in axis:
+                num *= data.shape[ax]
+
+        return [grad_broadcast / num]
 
 
 # 方差 维度
