@@ -275,7 +275,9 @@ class POWER(Math):
         )
 
     def backward(self, from_tensors, grad):
-        raise NotImplementedError
+        data0 = from_tensors[0].data
+        grad = grad * self.exponents * data0 ** (self.exponents - 1)
+        return [grad]
 
 
 # 取负
