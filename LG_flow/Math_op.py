@@ -105,7 +105,9 @@ class DIV_WITH_CONST:
         return results(from_tensors[0].data / from_tensors[1], from_tensors, self)
 
     def backward(self, from_tensors, grad):
-        raise NotImplementedError
+        data1 = from_tensors[1]
+        grad0 = grad / data1
+        return [grad0, None]
 
 
 # 张量/张量
