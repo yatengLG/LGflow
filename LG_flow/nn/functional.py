@@ -32,3 +32,17 @@ def cross_entropy(input:Tensor, target: Tensor, reduction: str = "mean")->Tensor
         raise ValueError("Invalid reduction option")
     return output
 
+def layer_norm(input:Tensor, normalized_shape:tuple, weight:Tensor = None, bias:Tensor = None, eps=1e-5)->Tensor:
+    dims = tuple(range(-len(normalized_shape), 0))
+
+    mean = input.mean(axis=dims, keepdims=True)
+    var = input.var(axis=dims, keepdims=True, unbiased=False)
+
+    input_norm = (input - mean) / ((var + eps) ** 0.5)
+
+    if weight is not None:
+        input_norm = input_norm * weight
+
+    if bias is not None:
+        input_norm = input_norm + bias
+    return input_norm
