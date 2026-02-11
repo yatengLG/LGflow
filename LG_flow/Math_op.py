@@ -471,6 +471,54 @@ class MEAN(Math):
 
 
 # 方差 维度
+class VAR(Math):
+    def __init__(self, axis: int, keepdims: bool, unbiased: bool):
+        self.axis = axis
+        self.keepdims = keepdims
+        self.unbiased = unbiased
+
+    def forward(self, from_tensors):
+        assert len(from_tensors) == 1
+        return results(
+            from_tensors[0].data.var(axis=self.axis, keepdims=self.keepdims, ddof=1 if self.unbiased else 0),
+            from_tensors,
+            self,
+        )
+
+    def backward(self, from_tensors, grad):
+        data = from_tensors[0].data
+
+        mean = data.mean(axis=self.axis, keepdims=True)
+
+        if self.keepdims:
+            grad_broadcast = np.broadcast_to(grad, data.shape)
+        else:
+            if self.axis is None:
+                grad_broadcast = np.full_like(data, grad)
+            else:
+                indices = [slice(None)] * len(data.shape)
+
+                if isinstance(self.axis, tuple):
+                    for ax in self.axis:
+                        indices[ax] = np.newaxis
+                else:
+                    indices[self.axis] = np.newaxis
+                grad_broadcast = np.broadcast_to(grad[tuple(indices)], data.shape)
+
+        if self.axis is None:
+            num = data.size
+        else:
+            axis = self.axis if isinstance(self.axis, tuple) else (self.axis,)
+            num = 1
+            for ax in axis:
+                num *= data.shape[ax]
+
+        ddof = 1 if self.unbiased else 0
+        new_grad = grad_broadcast * 2.0 * (data - mean) / (num - ddof)
+        return [new_grad]
+
+
+# 标准差 维度
 class STD(Math):
     def __init__(self, axis: int, keepdims: bool):
         self.axis = axis
