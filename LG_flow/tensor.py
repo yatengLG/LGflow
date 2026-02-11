@@ -188,11 +188,17 @@ class Tensor:
 
     # 求均值
     def mean(self, axis=None, keepdims=False):
-        assert isinstance(axis, int) or (axis is None)
+        assert isinstance(axis, int) or isinstance(axis, tuple) or (axis is None)
         results = Math_op.MEAN(axis, keepdims).forward([self])
         return Tensor(data=results.data, from_tensors=results.from_tensors, grad_fn=results.grad_fn)
 
     # 求方差
+    def var(self, axis=None, keepdims=False, unbiased=True):
+        assert isinstance(axis, int) or isinstance(axis, tuple) or (axis is None)
+        results = Math_op.VAR(axis, keepdims, unbiased).forward([self])
+        return Tensor(data=results.data, from_tensors=results.from_tensors, grad_fn=results.grad_fn)
+
+    # 求标准差
     def std(self, axis=None, keepdims=False):
         assert isinstance(axis, int) or (axis is None)
         results = Math_op.STD(axis, keepdims).forward([self])
