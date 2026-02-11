@@ -71,7 +71,32 @@ class MUL_WITH_TENSOR(Math):
         return results(from_tensors[0].data * from_tensors[1].data, from_tensors, self)
 
     def backward(self, from_tensors, grad):
-        return [grad * from_tensors[1].data, grad * from_tensors[0].data]
+        data0 = from_tensors[0].data
+        data1 = from_tensors[1].data
+        grad0 = grad * data1
+        grad1 = grad * data0
+
+        def reduce_grad(grad, target_shape):
+            if grad.shape == target_shape:
+                return grad
+
+            grad_shape = grad.shape
+            axes = []   # 需要求和的轴
+
+            # 从后往前处理维度
+            max_dims = max(len(grad_shape), len(target_shape))
+            for i in range(1, max_dims + 1):
+                try:
+                    if target_shape[-i] == 1 and grad_shape[-i] > 1:
+                        axes.append(max_dims - i)
+                except:
+                    axes.append(max_dims - i)
+            if axes:
+                grad = np.sum(grad, axis=tuple(axes), keepdims=True)
+            return grad.reshape(target_shape)
+        grad0 = reduce_grad(grad0, data0.shape)
+        grad1 = reduce_grad(grad1, data1.shape)
+        return [grad0, grad1]
 
 
 # 张量/常量
