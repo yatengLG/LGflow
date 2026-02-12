@@ -584,6 +584,23 @@ class Reshape(Math):
         return [grad.reshape(from_tensors[0].data.shape)]
 
 
+class Permute(Math):
+    def __init__(self, axes):
+        self.axes = axes
+
+    def forward(self, from_tensors):
+        assert len(from_tensors) == 1
+        return results(
+            np.transpose(from_tensors[0].data, axes=self.axes),
+            from_tensors,
+            self,
+        )
+
+    def backward(self, from_tensors, grad):
+        inv_axes = np.argsort(self.axes)
+        return [np.transpose(grad, axes=inv_axes)]
+
+
 class ReLU(Math):
     def forward(self, from_tensors):
         assert len(from_tensors) == 1
