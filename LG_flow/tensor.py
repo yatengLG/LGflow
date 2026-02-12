@@ -216,6 +216,10 @@ class Tensor:
         results = Math_op.T().forward([self])
         return Tensor(data=results.data, from_tensors=results.from_tensors, grad_fn=results.grad_fn)
 
+    def reshape(self, new_shape):
+        results = Math_op.Reshape(new_shape).forward([self])
+        return Tensor(data=results.data, from_tensors=results.from_tensors, grad_fn=results.grad_fn)
+
     def relu(self):
         results = Math_op.ReLU().forward([self])
         return Tensor(data=results.data, from_tensors=results.from_tensors, grad_fn=results.grad_fn)

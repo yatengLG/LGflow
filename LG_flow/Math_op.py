@@ -568,6 +568,22 @@ class T(Math):
         return [grad.T]
 
 
+class Reshape(Math):
+    def __init__(self, new_shape):
+        self.new_shape = new_shape
+
+    def forward(self, from_tensors):
+        assert len(from_tensors) == 1
+        return results(
+            from_tensors[0].data.reshape(self.new_shape),
+            from_tensors,
+            self,
+        )
+
+    def backward(self, from_tensors, grad):
+        return [grad.reshape(from_tensors[0].data.shape)]
+
+
 class ReLU(Math):
     def forward(self, from_tensors):
         assert len(from_tensors) == 1
