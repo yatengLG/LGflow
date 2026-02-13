@@ -11,7 +11,7 @@ class Math(object):
     def forward(self, from_tensors):
         raise NotImplementedError
 
-    def backward(self, from_tensors, grad):
+    def backward(self, from_tensors, grad, grad_index):
         raise NotImplementedError
 
 
@@ -21,7 +21,7 @@ class ADD_WITH_CONST(Math):
         assert len(from_tensors) == 2
         return results(from_tensors[0].data + from_tensors[1], from_tensors, self)
 
-    def backward(self, from_tensors, grad):
+    def backward(self, from_tensors, grad, grad_index):
         return [grad, None]
 
 
@@ -31,7 +31,7 @@ class ADD_WITH_TENSOR(Math):
         assert len(from_tensors) == 2
         return results(from_tensors[0].data + from_tensors[1].data, from_tensors, self)
 
-    def backward(self, from_tensors, grad):
+    def backward(self, from_tensors, grad, grad_index):
         def reduce_grad(grad, target_shape):
             if grad.shape == target_shape:
                 return grad
@@ -61,7 +61,7 @@ class MUL_WITH_CONST(Math):
     def forward(self, from_tensors):
         return results(from_tensors[0].data * from_tensors[1], from_tensors, self)
 
-    def backward(self, from_tensors, grad):
+    def backward(self, from_tensors, grad, grad_index):
         return [grad * from_tensors[1], None]
 
 
@@ -70,7 +70,7 @@ class MUL_WITH_TENSOR(Math):
     def forward(self, from_tensors):
         return results(from_tensors[0].data * from_tensors[1].data, from_tensors, self)
 
-    def backward(self, from_tensors, grad):
+    def backward(self, from_tensors, grad, grad_index):
         data0 = from_tensors[0].data
         data1 = from_tensors[1].data
         grad0 = grad * data1
@@ -104,7 +104,7 @@ class DIV_WITH_CONST:
     def forward(self, from_tensors):
         return results(from_tensors[0].data / from_tensors[1], from_tensors, self)
 
-    def backward(self, from_tensors, grad):
+    def backward(self, from_tensors, grad, grad_index):
         data1 = from_tensors[1]
         grad0 = grad / data1
         return [grad0, None]
@@ -115,7 +115,7 @@ class DIV_WITH_TENSOR(Math):
     def forward(self, from_tensors):
         return results(from_tensors[0].data / from_tensors[1].data, from_tensors, self)
 
-    def backward(self, from_tensors, grad):
+    def backward(self, from_tensors, grad, grad_index):
         data0 = from_tensors[0].data
         data1 = from_tensors[1].data
         grad0 = grad / data1
@@ -151,7 +151,7 @@ class DIV_BY_CONST(Math):
     def forward(self, from_tensors):
         return results(from_tensors[1] / from_tensors[0].data, from_tensors, self)
 
-    def backward(self, from_tensors, grad):
+    def backward(self, from_tensors, grad, grad_index):
         raise NotImplementedError
 
 
@@ -160,7 +160,7 @@ class EQ_TENSOR(Math):
     def forward(self, from_tensors):
         return results(from_tensors[0].data == from_tensors[1].data, from_tensors, self)
 
-    def backward(self, from_tensors, grad):
+    def backward(self, from_tensors, grad, grad_index):
         raise NotImplementedError
 
 
@@ -169,7 +169,7 @@ class EQ_CONST(Math):
     def forward(self, from_tensors):
         return results(from_tensors[0].data == from_tensors[1], from_tensors, self)
 
-    def backward(self, from_tensors, grad):
+    def backward(self, from_tensors, grad, grad_index):
         raise NotImplementedError
 
 
@@ -178,7 +178,7 @@ class NE_TENSOR(Math):
     def forward(self, from_tensors):
         return results(from_tensors[0].data != from_tensors[1].data, from_tensors, self)
 
-    def backward(self, from_tensors, grad):
+    def backward(self, from_tensors, grad, grad_index):
         raise NotImplementedError
 
 
@@ -187,7 +187,7 @@ class NE_CONST(Math):
     def forward(self, from_tensors):
         return results(from_tensors[0].data != from_tensors[1], from_tensors, self)
 
-    def backward(self, from_tensors, grad):
+    def backward(self, from_tensors, grad, grad_index):
         raise NotImplementedError
 
 
@@ -196,7 +196,7 @@ class LT_TENSOR(Math):
     def forward(self, from_tensors):
         return results(from_tensors[0].data < from_tensors[1].data, from_tensors, self)
 
-    def backward(self, from_tensors, grad):
+    def backward(self, from_tensors, grad, grad_index):
         raise NotImplementedError
 
 
@@ -205,7 +205,7 @@ class LT_CONST(Math):
     def forward(self, from_tensors):
         return results(from_tensors[0].data < from_tensors[1], from_tensors, self)
 
-    def backward(self, from_tensors, grad):
+    def backward(self, from_tensors, grad, grad_index):
         raise NotImplementedError
 
 
@@ -214,7 +214,7 @@ class LE_TENSOR(Math):
     def forward(self, from_tensors):
         return results(from_tensors[0].data <= from_tensors[1].data, from_tensors, self)
 
-    def backward(self, from_tensors, grad):
+    def backward(self, from_tensors, grad, grad_index):
         raise NotImplementedError
 
 
@@ -223,7 +223,7 @@ class LE_CONST(Math):
     def forward(self, from_tensors):
         return results(from_tensors[0].data <= from_tensors[1], from_tensors, self)
 
-    def backward(self, from_tensors, grad):
+    def backward(self, from_tensors, grad, grad_index):
         raise NotImplementedError
 
 
@@ -232,7 +232,7 @@ class GT_TENSOR(Math):
     def forward(self, from_tensors):
         return results(from_tensors[0].data > from_tensors[1].data, from_tensors, self)
 
-    def backward(self, from_tensors, grad):
+    def backward(self, from_tensors, grad, grad_index):
         raise NotImplementedError
 
 
@@ -241,7 +241,7 @@ class GT_CONST(Math):
     def forward(self, from_tensors):
         return results(from_tensors[0].data > from_tensors[1], from_tensors, self)
 
-    def backward(self, from_tensors, grad):
+    def backward(self, from_tensors, grad, grad_index):
         raise NotImplementedError
 
 
@@ -250,7 +250,7 @@ class GE_TENSOR(Math):
     def forward(self, from_tensors):
         return results(from_tensors[0].data >= from_tensors[1].data, from_tensors, self)
 
-    def backward(self, from_tensors, grad):
+    def backward(self, from_tensors, grad, grad_index):
         raise NotImplementedError
 
 
@@ -259,7 +259,7 @@ class GE_CONST(Math):
     def forward(self, from_tensors):
         return results(from_tensors[0].data >= from_tensors[1], from_tensors, self)
 
-    def backward(self, from_tensors, grad):
+    def backward(self, from_tensors, grad, grad_index):
         raise NotImplementedError
 
 
@@ -274,7 +274,7 @@ class POWER(Math):
             np.power(from_tensors[0].data, self.exponents), from_tensors, self
         )
 
-    def backward(self, from_tensors, grad):
+    def backward(self, from_tensors, grad, grad_index):
         data0 = from_tensors[0].data
         grad = grad * self.exponents * data0 ** (self.exponents - 1)
         return [grad]
@@ -285,7 +285,7 @@ class NEG(Math):
     def forward(self, from_tensors):
         return results(-from_tensors[0].data, from_tensors, self)
 
-    def backward(self, from_tensors, grad):
+    def backward(self, from_tensors, grad, grad_index):
         return [-grad]
 
 
@@ -294,7 +294,7 @@ class POS(Math):
     def forward(self, from_tensors):
         return results(from_tensors[0].data, from_tensors, self)
 
-    def backward(self, from_tensors, grad):
+    def backward(self, from_tensors, grad, grad_index):
         raise NotImplementedError
 
 
@@ -310,7 +310,7 @@ class CLIP(Math):
             from_tensors[0].data.clip(min=self.min, max=self.max), from_tensors, self
         )
 
-    def backward(self, from_tensors, grad):
+    def backward(self, from_tensors, grad, grad_index):
         raise NotImplementedError
 
 
@@ -319,7 +319,7 @@ class ITEM(Math):
     def forward(self, from_tensors, *args):
         return results(from_tensors[0].data.item(*args), from_tensors, self)
 
-    def backward(self, from_tensors, grad):
+    def backward(self, from_tensors, grad, grad_index):
         raise NotImplementedError
 
 
@@ -330,7 +330,7 @@ class ITEMSET(Math):
         b.itemset(*args)
         return results(b, from_tensors, self)
 
-    def backward(self, from_tensors, grad):
+    def backward(self, from_tensors, grad, grad_index):
         raise NotImplementedError
 
 
@@ -351,7 +351,7 @@ class MAX(Math):
             self,
         )
 
-    def backward(self, from_tensors, grad):
+    def backward(self, from_tensors, grad, grad_index):
         data = from_tensors[0].data
         new_grad = np.zeros_like(data)
         if self.axis is None:
@@ -377,7 +377,7 @@ class MIN(Math):
             self,
         )
 
-    def backward(self, from_tensors, grad):
+    def backward(self, from_tensors, grad, grad_index):
         raise NotImplementedError
 
 
@@ -387,7 +387,7 @@ class ABS(Math):
         assert len(from_tensors) == 1
         return results(np.abs(from_tensors[0].data), from_tensors, self)
 
-    def backward(self, from_tensors, grad):
+    def backward(self, from_tensors, grad, grad_index):
         raise NotImplementedError
 
 
@@ -405,7 +405,7 @@ class SUM(Math):
             self,
         )
 
-    def backward(self, from_tensors, grad):
+    def backward(self, from_tensors, grad, grad_index):
         data = from_tensors[0].data
         if self.keepdims:
             new_grad = np.broadcast_to(grad, data.shape)
@@ -441,7 +441,7 @@ class MEAN(Math):
             self,
         )
 
-    def backward(self, from_tensors, grad):
+    def backward(self, from_tensors, grad, grad_index):
         data = from_tensors[0].data
 
         if self.keepdims:
@@ -485,7 +485,7 @@ class VAR(Math):
             self,
         )
 
-    def backward(self, from_tensors, grad):
+    def backward(self, from_tensors, grad, grad_index):
         data = from_tensors[0].data
 
         mean = data.mean(axis=self.axis, keepdims=True)
@@ -532,7 +532,7 @@ class STD(Math):
             self,
         )
 
-    def backward(self, from_tensors, grad):
+    def backward(self, from_tensors, grad, grad_index):
         raise NotImplementedError
 
 
@@ -543,7 +543,7 @@ class EXP(Math):
             np.exp(from_tensors[0].data), from_tensors, self
         )
 
-    def backward(self, from_tensors, grad):
+    def backward(self, from_tensors, grad, grad_index):
         return [grad * np.exp(from_tensors[0].data)]
 
 
@@ -555,7 +555,7 @@ class LOG(Math):
         assert len(from_tensors) == 1
         return results(np.log(from_tensors[0].data), from_tensors, self)
 
-    def backward(self, from_tensors, grad):
+    def backward(self, from_tensors, grad, grad_index):
         return [grad / from_tensors[0].data]
 
 
@@ -564,7 +564,7 @@ class T(Math):
         assert len(from_tensors) == 1
         return results(from_tensors[0].data.T, from_tensors, self)
 
-    def backward(self, from_tensors, grad):
+    def backward(self, from_tensors, grad, grad_index):
         return [grad.T]
 
 
@@ -580,7 +580,7 @@ class Reshape(Math):
             self,
         )
 
-    def backward(self, from_tensors, grad):
+    def backward(self, from_tensors, grad, grad_index):
         return [grad.reshape(from_tensors[0].data.shape)]
 
 
@@ -596,7 +596,7 @@ class Permute(Math):
             self,
         )
 
-    def backward(self, from_tensors, grad):
+    def backward(self, from_tensors, grad, grad_index):
         inv_axes = np.argsort(self.axes)
         return [np.transpose(grad, axes=inv_axes)]
 
@@ -629,8 +629,14 @@ class Split(Math):
             self,
         )
 
-    def backward(self, from_tensors, grad):
-        return [np.concatenate(grad, axis=self.axis)]
+    def backward(self, from_tensors, grad, grad_index):
+        data = from_tensors[0].data
+
+        split_data = np.split(np.zeros_like(data), self.split_size_or_sections, axis=self.axis)
+        split_data[grad_index] = grad
+
+        new_grad = np.concatenate(split_data, axis=self.axis)
+        return [new_grad]
 
 
 class ReLU(Math):
@@ -638,7 +644,7 @@ class ReLU(Math):
         assert len(from_tensors) == 1
         return results(np.maximum(0, from_tensors[0].data), from_tensors, self)
 
-    def backward(self, from_tensors, grad):
+    def backward(self, from_tensors, grad, grad_index):
         return [grad * (from_tensors[0].data > 0)]
 
 
@@ -649,7 +655,7 @@ class MATMUL(Math):
             np.matmul(from_tensors[0].data, from_tensors[1].data), from_tensors, self
         )
 
-    def backward(self, from_tensors, grad):
+    def backward(self, from_tensors, grad, grad_index):
         return [
             np.matmul(grad, from_tensors[1].data.T),
             np.matmul(from_tensors[0].data.T, grad),

@@ -11,7 +11,7 @@ int16 = np.int16
 int32 = np.int64
 
 class Tensor:
-    def __init__(self, data, from_tensors=None, grad_fn=None, grad=None, dtype=float32, requires_grad=False):
+    def __init__(self, data, from_tensors=None, grad_fn=None, grad=None, dtype=float32, requires_grad=False, output_index=None):
         if not isinstance(data, np.ndarray):
             data = np.array(data)
         self.data = data.astype(dtype)
@@ -22,6 +22,7 @@ class Tensor:
         self.grad_fn = grad_fn
         self.grad = grad
         self.requires_grad = requires_grad
+        self.output_index = output_index    # 用于多输出型张量计算操作，记录当前tensor在整体输出中的index
 
     # 加法
     def __add__(self, other):
@@ -226,7 +227,8 @@ class Tensor:
 
     def split(self, split_size_or_sections, axis=0):
         results = Math_op.Split(split_size_or_sections, axis).forward([self])
-        return [Tensor(data=data, from_tensors=results.from_tensors, grad_fn=results.grad_fn) for data in results.data]
+        return [Tensor(data=data, from_tensors=results.from_tensors, grad_fn=results.grad_fn, output_index=index)
+                for index, data in enumerate(results.data)]
 
     def relu(self):
         results = Math_op.ReLU().forward([self])
@@ -301,7 +303,7 @@ class Tensor:
             self.grad = None
 
         if self.grad_fn is not None:
-            grads = self.grad_fn.backward(self.from_tensors, grad)
+            grads = self.grad_fn.backward(self.from_tensors, grad, grad_index=self.output_index)
             for tensor, grad in zip(self.from_tensors, grads):
                 if isinstance(tensor, Tensor):
                     if tensor.grad is not None and tensor.grad_fn is None:
