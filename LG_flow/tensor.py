@@ -2,6 +2,8 @@
 # @Author  : LG
 
 import numpy as np
+
+import LG_flow.Math_op
 from . import Math_op
 import copy
 
@@ -229,6 +231,17 @@ class Tensor:
         results = Math_op.Split(split_size_or_sections, axis).forward([self])
         return [Tensor(data=data, from_tensors=results.from_tensors, grad_fn=results.grad_fn, output_index=index)
                 for index, data in enumerate(results.data)]
+
+    def concat(self, others, axis):
+        if isinstance(others, Tensor):
+            others = [others]
+        if not isinstance(others, list):
+            raise
+        from_tensors = [self]
+        from_tensors.extend(others)
+        results = Math_op.Concat(axis).forward(from_tensors)
+        return Tensor(data=results.data, from_tensors=results.from_tensors, grad_fn=results.grad_fn)
+
 
     def relu(self):
         results = Math_op.ReLU().forward([self])

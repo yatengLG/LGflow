@@ -639,6 +639,28 @@ class Split(Math):
         return [new_grad]
 
 
+class Concat(Math):
+    def __init__(self, axis):
+        self.axis = axis
+
+    def forward(self, from_tensors):
+        datas = [tensor.data for tensor in from_tensors]
+        concat_data = np.concatenate(datas, axis=self.axis)
+        return results(
+            concat_data,
+            from_tensors,
+            self,
+        )
+
+    def backward(self, from_tensors, grad, grad_index):
+        split_axes = []
+        split_axis = 0
+        for tensor in from_tensors[:-1]:
+            split_axis += tensor.data.shape[self.axis]
+            split_axes.append(split_axis)
+        return np.split(grad, split_axes, axis=self.axis)
+
+
 class ReLU(Math):
     def forward(self, from_tensors):
         assert len(from_tensors) == 1
