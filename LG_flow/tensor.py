@@ -3,7 +3,6 @@
 
 import numpy as np
 
-import LG_flow.Math_op
 from . import Math_op
 import copy
 
