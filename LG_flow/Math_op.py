@@ -601,6 +601,38 @@ class Permute(Math):
         return [np.transpose(grad, axes=inv_axes)]
 
 
+class Split(Math):
+    def __init__(self, split_size_or_sections: int or list, axis=0):
+        self.split_size_or_sections = split_size_or_sections
+        self.axis = axis
+
+    def forward(self, from_tensors):
+        assert len(from_tensors) == 1
+        data = from_tensors[0].data
+
+        num_axis = data.shape[self.axis]
+        if isinstance(self.split_size_or_sections, int):
+            split_size_or_sections = [s for s in range(0, num_axis, self.split_size_or_sections) if s != 0]
+        else:
+            assert sum(self.split_size_or_sections) == num_axis
+            split_size_or_sections = []
+            s = 0
+            for ss in self.split_size_or_sections[:-1]:
+                s += ss
+                split_size_or_sections.append(s)
+        self.split_size_or_sections = split_size_or_sections
+
+        split_data = np.split(data, self.split_size_or_sections, axis=self.axis)
+        return results(
+            split_data,
+            from_tensors,
+            self,
+        )
+
+    def backward(self, from_tensors, grad):
+        return [np.concatenate(grad, axis=self.axis)]
+
+
 class ReLU(Math):
     def forward(self, from_tensors):
         assert len(from_tensors) == 1

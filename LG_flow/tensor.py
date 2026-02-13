@@ -224,6 +224,10 @@ class Tensor:
         results = Math_op.Permute(axes).forward([self])
         return Tensor(data=results.data, from_tensors=results.from_tensors, grad_fn=results.grad_fn)
 
+    def split(self, split_size_or_sections, axis=0):
+        results = Math_op.Split(split_size_or_sections, axis).forward([self])
+        return [Tensor(data=data, from_tensors=results.from_tensors, grad_fn=results.grad_fn) for data in results.data]
+
     def relu(self):
         results = Math_op.ReLU().forward([self])
         return Tensor(data=results.data, from_tensors=results.from_tensors, grad_fn=results.grad_fn)
