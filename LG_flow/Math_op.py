@@ -661,6 +661,21 @@ class Concat(Math):
         return np.split(grad, split_axes, axis=self.axis)
 
 
+class Dropout(Math):
+    def __init__(self, p=0.5):
+        self.p = p
+        self.mask = None
+
+    def forward(self, from_tensors):
+        assert len(from_tensors) == 1
+        data = from_tensors[0].data
+        self.mask = (np.random.random(data.shape) > self.p) / (1 - self.p)
+        return results(data * self.mask, from_tensors, self)
+
+    def backward(self, from_tensors, grad, grad_index):
+        return [grad * self.mask]
+
+
 class ReLU(Math):
     def forward(self, from_tensors):
         assert len(from_tensors) == 1
