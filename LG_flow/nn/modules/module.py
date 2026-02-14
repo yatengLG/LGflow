@@ -11,6 +11,7 @@ class Module(object):
         self._parameters = OrderedDict()
         self._modules = OrderedDict()
         self._buffers = OrderedDict()
+        self.training = True
 
     def forward(self, *inputs):
         raise NotImplementedError
@@ -85,3 +86,13 @@ class Module(object):
         get_params("",self)
 
         return params_dic
+
+    def train(self, mode: bool=True):
+        def set_module_train(module, mode):
+            module.training = mode
+            modules = module._modules
+            for _, module in modules.items():
+                set_module_train(module, mode)
+
+        set_module_train(self, mode)
+

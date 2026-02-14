@@ -241,8 +241,8 @@ class Tensor:
         results = Math_op.Concat(axis).forward(from_tensors)
         return Tensor(data=results.data, from_tensors=results.from_tensors, grad_fn=results.grad_fn)
 
-    def dropout(self, p):
-        results = Math_op.Dropout(p).forward([self])
+    def dropout(self, p, train=True):
+        results = Math_op.Dropout(p, train).forward([self])
         return Tensor(data=results.data, from_tensors=results.from_tensors, grad_fn=results.grad_fn)
 
     def relu(self):

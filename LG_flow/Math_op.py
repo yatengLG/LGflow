@@ -662,17 +662,25 @@ class Concat(Math):
 
 
 class Dropout(Math):
-    def __init__(self, p=0.5):
+    def __init__(self, p=0.5, train=True):
         self.p = p
+        self.train = train
         self.mask = None
 
     def forward(self, from_tensors):
         assert len(from_tensors) == 1
         data = from_tensors[0].data
+
+        if not self.train or self.p == 0:
+            self.mask = None
+            return results(data, from_tensors, self)
+
         self.mask = (np.random.random(data.shape) > self.p) / (1 - self.p)
         return results(data * self.mask, from_tensors, self)
 
     def backward(self, from_tensors, grad, grad_index):
+        if self.mask is None:
+            return [grad]
         return [grad * self.mask]
 
 

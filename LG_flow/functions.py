@@ -17,9 +17,9 @@ def split(tensor: Tensor, split_size_or_sections, axis=0):
     return [Tensor(data=data, from_tensors=results.from_tensors, grad_fn=results.grad_fn, output_index=index)
                 for index, data in enumerate(results.data)]
 
-def dropout(tensor: Tensor, p):
+def dropout(tensor: Tensor, p, train=True):
     assert isinstance(tensor, Tensor)
-    results = Dropout(p).forward([tensor])
+    results = Dropout(p, train).forward([tensor])
     return Tensor(data=results.data, from_tensors=results.from_tensors, grad_fn=results.grad_fn)
 
 
